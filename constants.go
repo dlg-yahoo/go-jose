@@ -32,6 +32,9 @@ type ContentEncryption string
 // CompressionAlgorithm represents an algorithm used for plaintext compression.
 type CompressionAlgorithm string
 
+// JoseKeyType represents an type of key that can be represented in JWK format.
+type JoseKeyType string
+
 var (
 	// ErrCryptoFailure represents an error in cryptographic primitive. This
 	// occurs when, for example, a message had an invalid authentication tag or
@@ -105,4 +108,11 @@ const (
 const (
 	NONE    = CompressionAlgorithm("")    // No compression
 	DEFLATE = CompressionAlgorithm("DEF") // DEFLATE (RFC 1951)
+)
+
+// Key types
+const (
+	KeyTypeSymmetric = JoseKeyType("oct") // Symmetric key
+	KeyTypeRSA       = JoseKeyType("RSA") // RSA key
+	KeyTypeEC        = JoseKeyType("EC")  // Elliptic curve key
 )

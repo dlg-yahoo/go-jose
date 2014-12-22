@@ -23,11 +23,45 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"math/big"
 	"regexp"
 	"strings"
 )
 
 var stripWhitespaceRegex = regexp.MustCompile("\\s")
+
+// Buffers that know how to do base64 and bigint.
+type JsonBuffer json.RawMessage
+
+func (buf JsonBuffer) MarshalJSON() ([]byte, error) {
+	str := base64URLEncode(buf)
+	return json.Marshal(str)
+}
+
+func (buf *JsonBuffer) UnmarshalJSON(data []byte) error {
+	var str string
+	err := json.Unmarshal(data, &str)
+	if err != nil {
+		return err
+	}
+
+	if str == "" {
+		return nil
+	}
+
+	*buf, err = base64URLDecode(str)
+	return err
+}
+
+func (buf JsonBuffer) ToBigInt() *big.Int {
+	ret := big.NewInt(0)
+	ret.SetBytes(buf)
+	return ret
+}
+
+func (buf JsonBuffer) ToInt() int {
+	return int(buf.ToBigInt().Int64())
+}
 
 // Url-safe base64 encode that strips padding
 func base64URLEncode(data []byte) string {
